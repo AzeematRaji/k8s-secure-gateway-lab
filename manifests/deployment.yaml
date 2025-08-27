@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: emailservice
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: emailservice
@@ -20,6 +21,21 @@ spec:
         env:
         - name: PORT
           value: "8080"
+        readinessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 8080
+        livenessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 8080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
@@ -40,6 +56,7 @@ kind: Deployment
 metadata:
   name: checkoutservice
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: checkoutservice
@@ -68,6 +85,22 @@ spec:
           value: "paymentservice:50051"
         - name: EMAIL_SERVICE_ADDR
           value: "emailservice:5000"
+        readinessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 5050
+        livenessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 5050
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        
 ---
 apiVersion: v1
 kind: Service
@@ -88,6 +121,7 @@ kind: Deployment
 metadata:
   name: recommendationservice
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: recommendationservice
@@ -106,6 +140,21 @@ spec:
           value: "8080"
         - name: PRODUCT_CATALOG_SERVICE_ADDR
           value: "productcatalogservice:3550"
+        readinessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 8080
+        livenessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 8080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 220Mi
+          limits:
+            cpu: 200m
+            memory: 400Mi
 ---
 apiVersion: v1
 kind: Service
@@ -126,6 +175,7 @@ kind: Deployment
 metadata:
   name: frontend
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: frontend
@@ -142,6 +192,10 @@ spec:
         env:
           - name: PORT
             value: "8080"
+          - name: ENV_PLATFORM
+            value: "aws"
+          - name: ENABLE_PROFILER
+            value: "0"
           - name: PRODUCT_CATALOG_SERVICE_ADDR
             value: "productcatalogservice:3550"
           - name: CURRENCY_SERVICE_ADDR
@@ -156,20 +210,44 @@ spec:
             value: "checkoutservice:5050"
           - name: AD_SERVICE_ADDR
             value: "adservice:9555"
+          - name: SHOPPING_ASSISTANT_SERVICE_ADDR
+            value: "shoppingassistantservice:80"
+        readinessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: "/_healthz"
+            port: 8080
+            httpHeaders:
+            - name: "Cookie"
+              value: "shop_session-id=x-readiness-probe"
+        livenessProbe:
+          initialDelaySeconds: 10
+          httpGet:
+            path: "/_healthz"
+            port: 8080
+            httpHeaders:
+            - name: "Cookie"
+              value: "shop_session-id=x-liveness-probe"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: frontend
 spec:
-  type: NodePort  
+  type: LoadBalancer  
   selector:
     app: frontend
   ports:
   - protocol: TCP
     port: 80       
     targetPort: 8080
-    nodePort: 30007
 
 ---
 apiVersion: apps/v1
@@ -177,6 +255,7 @@ kind: Deployment
 metadata:
   name: paymentservice
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: paymentservice
@@ -193,6 +272,23 @@ spec:
         env:
         - name: PORT
           value: "50051"
+        - name: DISABLE_PROFILER
+          value: "1"
+        readinessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 50051
+        livenessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 50051
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
@@ -213,6 +309,7 @@ kind: Deployment
 metadata:
   name: productcatalogservice
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: productcatalogservice
@@ -229,6 +326,21 @@ spec:
         env:
         - name: PORT
           value: "3550"
+        readinessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 3550
+        livenessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 3550
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
@@ -249,6 +361,7 @@ kind: Deployment
 metadata:
   name: cartservice
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: cartservice
@@ -265,6 +378,23 @@ spec:
         env:
         - name: REDIS_ADDR
           value: "redis-cart:6379"
+        readinessProbe:
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          grpc:
+            port: 7070
+        livenessProbe:
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          grpc:
+            port: 7070
+        resources:
+          requests:
+            cpu: 200m
+            memory: 64Mi
+          limits:
+            cpu: 300m
+            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
@@ -285,6 +415,7 @@ kind: Deployment
 metadata:
   name: redis-cart
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: redis-cart
@@ -298,9 +429,24 @@ spec:
         image: redis:alpine
         ports:
         - containerPort: 6379
+        readinessProbe:
+          periodSeconds: 5
+          tcpSocket:
+            port: 6379
+        livenessProbe:
+          periodSeconds: 5
+          tcpSocket:
+            port: 6379
         volumeMounts:
         - name: redis-storage
           mountPath: /data
+        resources:
+          limits:
+            memory: 256Mi
+            cpu: 125m
+          requests:
+            cpu: 70m
+            memory: 200Mi
       volumes:
       - name: redis-storage
         emptyDir: {}
@@ -324,6 +470,7 @@ kind: Deployment
 metadata:
   name: currencyservice
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: currencyservice
@@ -340,6 +487,21 @@ spec:
         env:
         - name: PORT
           value: "7000"
+        - name: DISABLE_PROFILER
+          value: "1"
+        readinessProbe:
+          grpc:
+            port: 7000
+        livenessProbe:
+          grpc:
+            port: 7000
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
@@ -360,6 +522,7 @@ kind: Deployment
 metadata:
   name: shippingservice
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: shippingservice
@@ -376,6 +539,20 @@ spec:
         env:
         - name: PORT
           value: "50051"
+        readinessProbe:
+          periodSeconds: 5
+          grpc:
+            port: 50051
+        livenessProbe:
+          grpc:
+            port: 50051
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
 ---
 apiVersion: v1
 kind: Service
@@ -396,6 +573,7 @@ kind: Deployment
 metadata:
   name: adservice
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: adservice
@@ -412,6 +590,23 @@ spec:
         env:
         - name: PORT
           value: "9555"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 180Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+        readinessProbe:
+          initialDelaySeconds: 20
+          periodSeconds: 15
+          grpc:
+            port: 9555
+        livenessProbe:
+          initialDelaySeconds: 20
+          periodSeconds: 15
+          grpc:
+            port: 9555
 ---
 apiVersion: v1
 kind: Service
