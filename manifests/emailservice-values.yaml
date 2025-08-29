@@ -1,0 +1,12 @@
+appName: emailservice
+appReplicas: 2 
+appImage: us-central1-docker.pkg.dev/google-samples/microservices-demo/emailservice
+appVersion: v0.10.3
+containersEnvVars:
+  - name: PORT
+    value: "8080"
+healthCheck:
+  type: grpc
+
+serviceType: ClusterIP
+servicePort: 5000

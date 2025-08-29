@@ -1,5 +1,5 @@
 appName: servicename
-namespace: default
+namespace: shopping-ms
 appReplicas: 1 
 appImage: us-central1-docker.pkg.dev/google-samples/microservices-demo/servicename
 appVersion: v0.1.0
@@ -11,17 +11,12 @@ containersEnvVars:
     value: "valuetwo"
 healthCheck:
   enabled: true
-  type: grpc
-  port: 8080
-  readiness:
-    periodSeconds: 5
-    initialDelaySeconds: 10
-  liveness:
-    periodSeconds: 5
-    initialDelaySeconds: 30
   type: http
   port: 8080
   path: /health
+  httpHeaders:
+    - name: Custom-Header
+      value: "HeaderValue"
   readiness:
     periodSeconds: 5
     initialDelaySeconds: 10

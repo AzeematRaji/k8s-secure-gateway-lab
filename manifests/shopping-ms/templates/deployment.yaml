@@ -26,26 +26,40 @@ spec:
 
         {{- if .Values.healthCheck.enabled }}
         readinessProbe:
-          periodSeconds: {{ .Values.healthCheck.readiness.periodSeconds | default 5 }}
-          initialDelaySeconds: {{ .Values.healthCheck.readiness.initialDelaySeconds | default 10 }}
-          {{- if eq .Values.healthCheck.type "grpc" }}
-          grpc:
-            port: {{ .Values.healthCheck.port | default .Values.containerPort }}
-          {{- else if eq .Values.healthCheck.type "http" }}
-          httpGet:
-            path: {{ .Values.healthCheck.path | default "/health" }}
-            port: {{ .Values.healthCheck.port | default .Values.containerPort }}
-          {{- end }}
-        livenessProbe:
-          periodSeconds: {{ .Values.healthCheck.liveness.periodSeconds | default 5 }}
-          initialDelaySeconds: {{ .Values.healthCheck.liveness.initialDelaySeconds | default 30 }}
+          periodSeconds: {{ .Values.healthCheck.readiness.periodSeconds }}
+          initialDelaySeconds: {{ .Values.healthCheck.readiness.initialDelaySeconds }}
           {{- if eq .Values.healthCheck.type "grpc" }}
           grpc:
             port: {{ .Values.healthCheck.port | default .Values.containerPort }}
           {{- else if eq .Values.healthCheck.type "http" }}
           httpGet:
             path: {{ .Values.healthCheck.path }}
+            port: {{ .Values.healthCheck.port }}
+            {{- if .Values.healthCheck.httpHeaders }}
+            httpHeaders:
+            {{- range .Values.healthCheck.httpHeaders }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+            {{- end }}
+          {{- end }}
+        livenessProbe:
+          periodSeconds: {{ .Values.healthCheck.liveness.periodSeconds }}
+          initialDelaySeconds: {{ .Values.healthCheck.liveness.initialDelaySeconds }}
+          {{- if eq .Values.healthCheck.type "grpc" }}
+          grpc:
             port: {{ .Values.healthCheck.port | default .Values.containerPort }}
+          {{- else if eq .Values.healthCheck.type "http" }}
+          httpGet:
+            path: {{ .Values.healthCheck.path }}
+            port: {{ .Values.healthCheck.port }}
+            {{- if .Values.healthCheck.httpHeaders }}
+            httpHeaders:
+            {{- range .Values.healthCheck.httpHeaders }}
+            - name: {{ .name }}
+              value: "{{ .value }}"
+            {{- end }}
+            {{- end }}
           {{- end }}
         {{- end }}
         resources:
