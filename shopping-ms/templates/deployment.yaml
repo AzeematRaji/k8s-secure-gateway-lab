@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.appName }}
+  namespace: {{ .Values.namespace }}
 spec:
   replicas: {{ .Values.appReplicas }}
   selector:
@@ -18,22 +19,39 @@ spec:
         ports:
         - containerPort: {{ .Values.containerPort }}
         env:
-        {{ -range.Values.containersEnvVars }}
+        {{- range .Values.containersEnvVars }}
         - name: {{ .name }}
           value: "{{ .value }}"
-        {{ -end }}
+        {{- end }}
+
+        {{- if .Values.healthCheck.enabled }}
         readinessProbe:
-          periodSeconds: 5
+          periodSeconds: {{ .Values.healthCheck.readiness.periodSeconds | default 5 }}
+          initialDelaySeconds: {{ .Values.healthCheck.readiness.initialDelaySeconds | default 10 }}
+          {{- if eq .Values.healthCheck.type "grpc" }}
           grpc:
-            port: 8080
+            port: {{ .Values.healthCheck.port | default .Values.containerPort }}
+          {{- else if eq .Values.healthCheck.type "http" }}
+          httpGet:
+            path: {{ .Values.healthCheck.path | default "/health" }}
+            port: {{ .Values.healthCheck.port | default .Values.containerPort }}
+          {{- end }}
         livenessProbe:
-          periodSeconds: 5
+          periodSeconds: {{ .Values.healthCheck.liveness.periodSeconds | default 5 }}
+          initialDelaySeconds: {{ .Values.healthCheck.liveness.initialDelaySeconds | default 30 }}
+          {{- if eq .Values.healthCheck.type "grpc" }}
           grpc:
-            port: 8080
+            port: {{ .Values.healthCheck.port | default .Values.containerPort }}
+          {{- else if eq .Values.healthCheck.type "http" }}
+          httpGet:
+            path: {{ .Values.healthCheck.path }}
+            port: {{ .Values.healthCheck.port | default .Values.containerPort }}
+          {{- end }}
+        {{- end }}
         resources:
           requests:
-            cpu: 100m
-            memory: 64Mi
+            cpu: {{ .Values.requestsCpu}}
+            memory: {{ .Values.requestsMemory}}
           limits:
-            cpu: 200m
-            memory: 128Mi
+            cpu: {{ .Values.limitsCpu}}
+            memory: {{ .Values.limitsMemory}}
