@@ -1,0 +1,14 @@
+appName: productcatalogservice
+appReplicas: 2
+appImage: us-central1-docker.pkg.dev/google-samples/microservices-demo/productcatalogservice
+appVersion: v0.10.3
+containerPort: 3550
+containersEnvVars:
+  - name: PORT
+    value: "3550"
+healthCheck:
+  type: grpc
+  port: 3550
+
+
+servicePort: 3550

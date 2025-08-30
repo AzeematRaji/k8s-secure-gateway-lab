@@ -1,0 +1,13 @@
+appName: redis-cart
+namespace: shopping-ms
+appImage: redis
+appVersion: alpine
+appReplicas: 2
+containerPort: 6379
+servicePort: 6379
+volumeName: redis-storage
+mountPath: /data
+limitsMemory: 256Mi
+limitsCpu: 125m
+requestsMemory: 200Mi
+requestsCpu: 70m

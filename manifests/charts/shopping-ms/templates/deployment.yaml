@@ -33,12 +33,12 @@ spec:
             port: {{ .Values.healthCheck.port | default .Values.containerPort }}
           {{- else if eq .Values.healthCheck.type "http" }}
           httpGet:
-            path: {{ .Values.healthCheck.path }}
+            path: "{{ .Values.healthCheck.path }}"
             port: {{ .Values.healthCheck.port }}
             {{- if .Values.healthCheck.httpHeaders }}
             httpHeaders:
             {{- range .Values.healthCheck.httpHeaders }}
-            - name: {{ .name }}
+            - name: "{{ .name }}"
               value: "{{ .value }}"
             {{- end }}
             {{- end }}
@@ -51,12 +51,12 @@ spec:
             port: {{ .Values.healthCheck.port | default .Values.containerPort }}
           {{- else if eq .Values.healthCheck.type "http" }}
           httpGet:
-            path: {{ .Values.healthCheck.path }}
+            path: "{{ .Values.healthCheck.path }}"
             port: {{ .Values.healthCheck.port }}
             {{- if .Values.healthCheck.httpHeaders }}
             httpHeaders:
             {{- range .Values.healthCheck.httpHeaders }}
-            - name: {{ .name }}
+            - name: "{{ .name }}"
               value: "{{ .value }}"
             {{- end }}
             {{- end }}

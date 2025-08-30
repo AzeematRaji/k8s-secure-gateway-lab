@@ -1,0 +1,17 @@
+appName: recommendationservice
+appReplicas: 2
+appImage: us-central1-docker.pkg.dev/google-samples/microservices-demo/recommendationservice
+appVersion: v0.10.3 
+containersEnvVars:
+  - name: PORT
+    value: "8080"
+  - name: PRODUCT_CATALOG_SERVICE_ADDR
+    value: "productcatalogservice:3550"
+healthCheck:
+  type: grpc
+  
+requestsMemory: 220Mi
+limitsMemory: 400Mi
+
+serviceType: ClusterIP
+servicePort: 8080

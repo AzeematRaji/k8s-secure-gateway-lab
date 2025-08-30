@@ -1,0 +1,19 @@
+appName: adservice
+appReplicas: 2
+appImage: us-central1-docker.pkg.dev/google-samples/microservices-demo/adservice
+appVersion: v0.10.3
+containerPort: 9555
+containersEnvVars:
+  - name: PORT
+    value: "9555"
+healthCheck:
+  enabled: true
+  type: grpc
+  port: 9555
+  
+requestsCpu: 200m
+requestsMemory: 180Mi
+limitsCpu: 300m
+limitsMemory: 300Mi
+
+servicePort: 9555

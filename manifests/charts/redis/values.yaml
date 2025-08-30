@@ -1,0 +1,13 @@
+appName: redis
+namespace: default
+appImage: redis
+appVersion: alpine
+appReplicas: 1
+containerPort: 6379
+servicePort: 6379
+volumeName: redis-data
+mountPath: /data
+limitsMemory: 256Mi
+limitsCpu: 500m
+requestsMemory: 256Mi
+requestsCpu: 500m

@@ -1,0 +1,15 @@
+appName: cartservice
+appReplicas: 2
+appImage: us-central1-docker.pkg.dev/google-samples/microservices-demo/cartservice
+appVersion: v0.10.3
+containerPort: 7070
+containersEnvVars:
+  - name: REDIS_ADDR
+    value: "redis-cart:6379"
+healthCheck:
+  type: grpc
+  port: 7070
+requestsCpu: 200m
+limitsCpu: 300m
+
+servicePort: 7070
