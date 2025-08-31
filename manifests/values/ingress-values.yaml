@@ -1,7 +1,8 @@
 ingress:
   hosts:
-    - host: shopping-ms.test
+    - host: shopping-ms.ddns.net
       path: /
       serviceName: frontend
+      servicePort: 80
   tls:
     enabled: true

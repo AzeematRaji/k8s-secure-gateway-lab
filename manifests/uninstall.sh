@@ -10,3 +10,4 @@ helm uninstall paymentservice
 helm uninstall productcatalogservice
 helm uninstall recommendationservice
 helm uninstall shippingservice
+helm uninstall shoppingms
