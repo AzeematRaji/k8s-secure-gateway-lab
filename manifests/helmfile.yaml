@@ -1,0 +1,51 @@
+namespace: shopping-ms
+
+releases:
+  - name: shopping-ms
+    chart: charts/shopping-ms
+    values:
+      - values/ingress-values.yaml
+  - name: rediscart
+    chart: charts/redis
+    values:
+      - values/redis-values.yaml
+  - name: frontend
+    chart: charts/shopping-ms
+    values: 
+      - values/frontend-values.yaml
+  - name: emailservice
+    chart: charts/shopping-ms
+    values:
+      - values/emailservice-values.yaml 
+  - name: paymentservice
+    chart: charts/shopping-ms
+    values:
+      - values/paymentservice-values.yaml
+  - name: productcatalogservice     
+    chart: charts/shopping-ms
+    values:
+      - values/productcatalogservice-values.yaml         
+  - name: currencyservice
+    chart: charts/shopping-ms
+    values:
+      - values/currencyservice-values.yaml
+  - name: cartservice
+    chart: charts/shopping-ms
+    values:
+      - values/cartservice-values.yaml
+  - name: recommendationservice
+    chart: charts/shopping-ms
+    values:
+      - values/recommendationservice-values.yaml
+  - name: shippingservice
+    chart: charts/shopping-ms
+    values:
+      - values/shippingservice-values.yaml
+  - name: checkoutservice
+    chart: charts/shopping-ms
+    values:
+      - values/checkoutservice-values.yaml
+  - name: adservice
+    chart: charts/shopping-ms
+    values:
+      - values/adservice-values.yaml 

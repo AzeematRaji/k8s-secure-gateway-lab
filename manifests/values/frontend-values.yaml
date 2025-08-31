@@ -28,7 +28,7 @@ containersEnvVars:
 healthCheck:
   type: http
   port: 8080
-  path: /healthz
+  path: /_healthz
   httpHeaders:
     - name: "Cookie"
       value: "shop_session-id=x-readiness-probe"

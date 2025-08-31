@@ -1,0 +1,7 @@
+ingress:
+  hosts:
+    - host: shopping-ms.test
+      path: /
+      serviceName: frontend
+  tls:
+    enabled: true
