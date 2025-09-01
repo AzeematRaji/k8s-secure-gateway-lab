@@ -1,4 +1,6 @@
+namespace: shopping-ms
 ingress:
+  enabled: true
   hosts:
     - host: shoppingms.ddns.net
       path: /

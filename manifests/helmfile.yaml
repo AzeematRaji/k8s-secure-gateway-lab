@@ -1,8 +1,8 @@
 namespace: shopping-ms
 
 releases:
-  - name: shopping-ms
-    chart: charts/shopping-ms
+  - name: shoppingms
+    chart: charts/ingress
     values:
       - values/ingress-values.yaml
   - name: rediscart

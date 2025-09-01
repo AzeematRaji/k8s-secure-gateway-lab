@@ -10,4 +10,5 @@ helm install -f values/paymentservice-values.yaml paymentservice charts/shopping
 helm install -f values/productcatalogservice-values.yaml productcatalogservice charts/shopping-ms
 helm install -f values/recommendationservice-values.yaml recommendationservice charts/shopping-ms
 helm install -f values/shippingservice-values.yaml shippingservice charts/shopping-ms
-helm install -f values/ingress-values.yaml shoppingms charts/shopping-ms
+
+helm install -f values/ingress-values.yaml shoppingms charts/ingress
