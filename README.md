@@ -1,15 +1,15 @@
 ```
 k8s-secure-gateway-lab/
 │
-├── infra/                 # Infrastructure as Code
-│   ├── terraform/         # EKS, networking, IAM, etc.
-│   └── helm/              # Charts for gateway, monitoring, etc.
+├── infra/                 
+│   ├── terraform/         
+│   └── helm/             
 │
-├── apps/                  # Applications deployed
-│   ├── blog/              # Your blog app
-│   ├── model-api/         # ML / FastAPI app
-│   ├── notes/             # Notes app
-│   └── lab-insecure/      # Deliberately weak app (Red Team target)
+├── apps/                  
+│   ├── blog/             
+│   ├── model-api/         
+│   ├── notes/            
+│   └── lab-insecure/      
 │
 ├── policies/              # Security policies
 │   ├── rbac/              # RBAC YAMLs
